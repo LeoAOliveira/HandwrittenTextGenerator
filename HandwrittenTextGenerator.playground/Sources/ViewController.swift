@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import PlaygroundSupport
 
 public class ViewController: UIViewController {
     
@@ -74,8 +75,42 @@ public class ViewController: UIViewController {
         collageView.addSubview(greenView)
     }
     
+    public override func viewDidAppear(_ animated: Bool) {
+        imageGenerator()
+    }
+    
     public override func viewDidLayoutSubviews() {
         NSLayoutConstraint.activate(constraints)
         NSLayoutConstraint.activate(viewsConstraints)
     }
+    
+    // MARK: - Functions
+    
+    private func imageGenerator() {
+        
+        UIGraphicsBeginImageContext(collageView.frame.size)
+        
+        collageView.layer.render(in: UIGraphicsGetCurrentContext()!)
+        
+        if let image = UIGraphicsGetImageFromCurrentImageContext(),
+           let data = image.pngData() {
+            
+            let filename = playgroundSharedDataDirectory.appendingPathComponent("generatedImage.png")
+        
+            do {
+                try data.write(to: filename)
+                print("Success")
+            } catch {
+                print("Fail 3")
+                print(error.localizedDescription)
+            }
+            
+            // Uncomment de line below to get the path to saved image
+            // print("PATH: \(filename)")
+            
+        } else {
+            print("Fail 2: Error saving image")
+        }
+    }
+
 }
