@@ -55,6 +55,7 @@ public class ViewController: UIViewController {
         }
         
         textImageView.image = image
+        
         TextRecognition().boxRequest(image: image, imageView: textImageView)
         
         imageGenerator()
@@ -99,5 +100,53 @@ public class ViewController: UIViewController {
             print("Fail 2: Error saving image")
         }
     }
+}
 
+// MARK: - TextRecognition
+
+import Vision
+
+public class TextRecognition {
+    
+    private var imageView: UIImageView = UIImageView(frame: .zero)
+    
+    public func boxRequest(image: UIImage, imageView: UIImageView) {
+        
+        guard let ciImage = CIImage(image: image)  else {
+            return
+        }
+        
+        let requestHandler = VNImageRequestHandler(ciImage: ciImage, 
+                                                   options: [:])
+        
+        self.imageView = imageView
+        
+        DispatchQueue.main.async {
+            
+            self.imageView.layer.sublayers?.removeSubrange(1...)
+            
+            let request = VNDetectTextRectanglesRequest { (request, error) in
+                
+                guard let observations = request.results as? [VNTextObservation] else {
+                    return
+                }
+                
+                for currentObservation in observations {
+                    
+                    for currentCharacterBox in currentObservation.characterBoxes! {
+                    }
+                }
+                
+            }
+            
+            request.reportCharacterBoxes = true
+            
+            do {
+                try requestHandler.perform([request])
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
 }
